@@ -9,8 +9,10 @@ The game is built by AI agents, so the repository is organized for small context
 small files, one `MODULE.md` per module, strict layering, a routing table in `AGENTS.md`,
 and a `docs/` set (art bible, AI design, terrain, roadmap, decisions, changelog).
 
-**Status:** Phase 1 — walking prototype. A placeholder snail walks on a seeded procedural
-terrain with a following camera. Carving, AI snails and dialogue arrive in later phases.
+**Status:** Phase 2 — destructible terrain. Destructible bitmap terrain with circle
+carving, dynamic surface updates, dirty-chunk selective rendering, player Q munch input
+with crumb FX, falling kinematics, and lossless RLE mask codec. AI snails and dialogue
+arrive in next phases.
 
 ## Quick start
 
