@@ -122,4 +122,35 @@ describe('snail kinematics', () => {
     expect(next.grounded).toBe(true);
     expect(next.vx).toBe(0);
   });
+
+  it('falls and lands when the ground is carved away from underneath', () => {
+    // Snail standing at x=200 on surface y=300
+    let groundY = 300;
+    const dynamicTerrain = {
+      isSolid: (_x: number, y: number) => y >= groundY,
+      groundHeightBelow: (_x: number, startY: number) => (startY < groundY ? groundY : groundY),
+      surfaceNormal: () => ({ x: 0, y: -1 }),
+      isBodyFree: () => true,
+    };
+
+    let state = createKinematicState(200, 300);
+    expect(state.grounded).toBe(true);
+
+    // Carve removes ground from 300 to 330: new ground is at y=330
+    groundY = 330;
+
+    // Next step detects ground has dropped beyond maxSnapDown
+    state = stepKinematics(state, { direction: 0 }, dynamicTerrain, 1 / 30);
+    expect(state.grounded).toBe(false);
+    expect(state.vy).toBeGreaterThan(0);
+
+    // Continue simulation until snail lands on new floor
+    for (let i = 0; i < 30 && !state.grounded; i += 1) {
+      state = stepKinematics(state, { direction: 0 }, dynamicTerrain, 1 / 30);
+    }
+
+    expect(state.grounded).toBe(true);
+    expect(state.y).toBe(330);
+    expect(state.vy).toBe(0);
+  });
 });

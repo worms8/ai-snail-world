@@ -10,6 +10,9 @@ export const WORLD_HEIGHT = 1200;
 export const TERRAIN_CHUNK_SIZE = 256;
 export const TERRAIN_EDGE_WIDTH = 2;
 export const TERRAIN_GRASS_HEIGHT = 10;
+export const MUNCH_RADIUS = 14;
+export const MUNCH_INTERVAL_MS = 250;
+export const MAX_CARVE_RADIUS = 64;
 
 export const SNAIL_BODY_WIDTH = 48;
 export const SNAIL_BODY_HEIGHT = 40;

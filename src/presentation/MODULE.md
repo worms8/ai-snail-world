@@ -8,8 +8,9 @@ localization. Reads simulation snapshots and listens to events; never owns truth
 
 - `LOCALES`, `DEFAULT_LOCALE`, `uiString`, `UiStringKey`, `LocaleId`
 - `RenderSnapshot`, `CameraState`, `SpeechBubble`, `EmotionIconRequest`
-- `BootScene`, `WorldScene`, `WorldViewContext`, `PlayerSource` (Phase 1)
-- `TerrainRenderer`, `createPlaceholderSnail`, `posePlaceholderSnail` stay internal
+- `BootScene`, `WorldScene`, `WorldViewContext`, `PlayerSource`
+- `TerrainRenderer`, `terrainPixelColor`, `spawnCrumbs`
+- `createPlaceholderSnail`, `posePlaceholderSnail` stay internal
 
 **Inputs / outputs:** `WorldSnapshot` + event stream in; draw calls, tweens, audio and
 UI DOM out. Phaser is allowed only here.

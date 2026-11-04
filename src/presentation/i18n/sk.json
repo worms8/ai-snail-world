@@ -1,7 +1,7 @@
 {
   "game.title": "Svet slimákov",
   "game.subtitle": "Malý živý svet, ktorý sa hýbe aj bez teba.",
-  "hud.controls": "Šípky alebo A / D — pohyb",
+  "hud.controls": "Šípky alebo A / D — pohyb • Q — hryzenie",
   "hud.chatPlaceholder": "Napíš slimákovi…",
   "hud.pause": "Pauza",
   "hud.settings": "Nastavenia",

@@ -107,13 +107,15 @@ npm run docs:check   # MODULE.md, line limits, file map, dependency gates
 - Do not store game truth in Phaser objects or rendered pixels.
 - Do not add a dependency without pinning it and recording the reason in `DECISIONS.md`.
 
-## Current status (Phase 1 — complete)
+## Current status (Phase 2 — complete)
 
 - **Works:** docs set, layered scaffold, pinned toolchain, seeded terrain heightfield with
   chunked renderer, procedural snail, walk/step-up/fall kinematics, fixed 30 Hz clock with
-  interpolated rendering, keyboard movement, dead-zone camera, Slovak HUD hint, 17 tests.
-- **Not implemented:** terrain carving, AI snails, conversations, LLM calls, persistence,
-  audio, final art.
-- **Next:** Phase 2 — destructive terrain. First task: implement `carveCircle` on the mask
-  with dirty-rect coalescing, then repaint only the dirty chunks. See `docs/ROADMAP.md`
-  Phase 2.
+  interpolated rendering, keyboard movement, dead-zone camera, Slovak HUD hint, destructible
+  bitmap terrain (circle carving, surface refresh, dirty-rect chunk coalescing, selective
+  chunk repainting), player Q munch input with crumb FX, snail falling reaction under carved
+  pits, lossless RLE persistence codec, 29 tests.
+- **Not implemented:** AI snails (Tier 0 routines), conversations, LLM proxy calls,
+  persistence IndexedDB layer, audio, final art.
+- **Next:** Phase 3 — autonomous NPCs (Tier 0). First task: define snail content in
+  `src/domain/data/snails.json` with zod validation. See `docs/ROADMAP.md` Phase 3.

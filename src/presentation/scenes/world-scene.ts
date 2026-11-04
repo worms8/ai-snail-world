@@ -1,7 +1,14 @@
 import Phaser from 'phaser';
-import { FIXED_DELTA_SECONDS, WORLD_HEIGHT, WORLD_WIDTH, lerp } from '../../core/index';
-import { SimulationClock } from '../../world/index';
+import {
+  FIXED_DELTA_SECONDS,
+  MUNCH_INTERVAL_MS,
+  WORLD_HEIGHT,
+  WORLD_WIDTH,
+  lerp,
+} from '../../core/index';
 import type { KinematicState } from '../../world/index';
+import { SimulationClock } from '../../world/index';
+import { spawnCrumbs } from '../fx/crumbs';
 import { DEFAULT_LOCALE, uiString } from '../i18n';
 import { createPlaceholderSnail, posePlaceholderSnail } from '../sprites/placeholder-snail';
 import { TerrainRenderer } from '../terrain-renderer';
@@ -15,8 +22,10 @@ export class WorldScene extends Phaser.Scene {
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
   private keyA!: Phaser.Input.Keyboard.Key;
   private keyD!: Phaser.Input.Keyboard.Key;
+  private keyQ!: Phaser.Input.Keyboard.Key;
   private previousPlayer!: KinematicState;
   private currentPlayer!: KinematicState;
+  private nextMunchTime = 0;
 
   constructor(private readonly context: WorldViewContext) {
     super('WorldScene');
@@ -43,6 +52,7 @@ export class WorldScene extends Phaser.Scene {
       this.cursors = keyboard.createCursorKeys();
       this.keyA = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
       this.keyD = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
+      this.keyQ = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q);
     }
 
     this.hud = this.add
@@ -66,6 +76,17 @@ export class WorldScene extends Phaser.Scene {
   }
 
   override update(time: number, deltaMilliseconds: number): void {
+    if (this.keyQ?.isDown && time >= this.nextMunchTime) {
+      this.nextMunchTime = time + MUNCH_INTERVAL_MS;
+      const carved = this.context.player.munch();
+      if (carved) {
+        const facingDir = this.currentPlayer.facing === 'left' ? -1 : 1;
+        const mouthX = this.currentPlayer.x + facingDir * 20;
+        const mouthY = this.currentPlayer.y - 8;
+        spawnCrumbs(this, mouthX, mouthY, this.currentPlayer.facing);
+      }
+    }
+
     const direction = this.readDirection();
     const alpha = this.clock.advance(deltaMilliseconds / 1000, () => {
       this.previousPlayer = this.currentPlayer;
@@ -81,6 +102,8 @@ export class WorldScene extends Phaser.Scene {
     const facing = this.currentPlayer.facing === 'left' ? -1 : 1;
     if (Math.sign(this.snail.scaleX) !== facing) this.snail.setScale(facing, this.snail.scaleY);
     posePlaceholderSnail(this.snail, this.currentPlayer.vx !== 0, time / 1000);
+
+    this.terrainRenderer?.renderDirty();
   }
 
   private readDirection(): number {

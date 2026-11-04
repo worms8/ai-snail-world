@@ -100,3 +100,30 @@ export interface EventBus {
   emit<K extends EventName>(name: K, payload: EventMap[K]): void;
   on<K extends EventName>(name: K, handler: (payload: EventMap[K]) => void): Unsubscribe;
 }
+
+export function createEventBus(): EventBus {
+  type AnyHandler = (payload: unknown) => void;
+  const listeners = new Map<EventName, Set<AnyHandler>>();
+
+  return {
+    emit<K extends EventName>(name: K, payload: EventMap[K]): void {
+      const set = listeners.get(name);
+      if (!set) return;
+      for (const handler of set) {
+        handler(payload);
+      }
+    },
+    on<K extends EventName>(name: K, handler: (payload: EventMap[K]) => void): Unsubscribe {
+      let set = listeners.get(name);
+      if (!set) {
+        set = new Set();
+        listeners.set(name, set);
+      }
+      const genericHandler = handler as AnyHandler;
+      set.add(genericHandler);
+      return () => {
+        set?.delete(genericHandler);
+      };
+    },
+  };
+}

@@ -21,9 +21,12 @@ export interface TerrainMaskData {
 
 export interface TerrainChunk {
   readonly index: number;
+  readonly column: number;
+  readonly row: number;
   readonly rect: Rect;
   readonly textureKey: string;
   dirty: boolean;
+  dirtyRect: Rect | null;
 }
 
 export interface TerrainQuery {
@@ -37,10 +40,14 @@ export interface TerrainQuery {
 
 export interface TerrainCarver extends TerrainQuery {
   readonly data: TerrainMaskData;
+  readonly chunks: readonly TerrainChunk[];
+  readonly surfaceY: Int16Array;
   /** Returns the merged dirty rectangle, or null when nothing was removed. */
   carveCircle(x: number, y: number, radius: number): Rect | null;
   /** Coalesced dirty regions since the last render pass. */
   takeDirtyRects(): readonly Rect[];
+  /** Chunks that need repainting since the last pass. */
+  takeDirtyChunks(): readonly TerrainChunk[];
 }
 
 export interface PointOfInterest {

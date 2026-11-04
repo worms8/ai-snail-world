@@ -7,7 +7,10 @@ No Phaser objects, no drawing, no LLM.
 
 - `Rect`, `TerrainMaskData`, `TerrainChunk`, `TerrainQuery`, `TerrainCarver`,
   `PointOfInterest`
-- `TerrainMask`, `createTerrainMask`, `TerrainGenerationOptions` (Phase 1 seeded heightfield)
+- `TerrainMask`, `createTerrainMask`, `TerrainGenerationOptions`
+- `isSolid`, `groundHeightBelow`, `surfaceNormal`, `isBodyFree`
+- `carveCircle`, `refreshSurfaceColumn`, `markChunksDirty`, `coalesceRect`
+- `encodeTerrainRle`, `decodeTerrainRle`
 - `createKinematicState`, `stepKinematics`, `MovementIntent`, `KinematicsOptions`
 - `SimulationClock`, `SimulationClockOptions`, `TickHandler`
 - `KinematicState`, `LocomotionState`, `SnailActivity`, `SnailBody`, `WorldSnapshot`

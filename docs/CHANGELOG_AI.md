@@ -93,3 +93,26 @@ the last entry first. Use the template:
 - **Notes for next session:** when carving arrives, tunnels introduce ceilings and the
   full body box matters again for grounded movement. Revisit `stepKinematics` then; do not
   re-add the edge foot checks without making them slope-aware.
+
+---
+
+## 2026-11-04 — Phase 2: destructible terrain
+
+- **Task:** implement destructible bitmap terrain carving, surface height refresh, dirty
+  chunk coalescing, selective chunk repainting, player Q munch input with crumb FX, falling
+  kinematics into carved pits, and lossless RLE mask persistence.
+- **Files changed (new):** `src/world/collision.ts`, `src/world/terrain-carver.ts`,
+  `src/world/terrain-rle.ts`, `src/presentation/fx/crumbs.ts`,
+  `tests/world/carve.test.ts`, `tests/world/terrain-rle.test.ts`.
+- **Files changed (modified):** `src/core/config.ts`, `src/core/events.ts`,
+  `src/world/terrain.ts`, `src/world/terrain-mask.ts`, `src/world/index.ts`,
+  `src/presentation/terrain-renderer.ts`, `src/presentation/world-view.ts`,
+  `src/presentation/scenes/world-scene.ts`, `src/presentation/index.ts`,
+  `src/presentation/i18n/sk.json`, `src/app/wiring.ts`, `tests/world/kinematics.test.ts`.
+- **Docs updated:** `src/world/MODULE.md`, `src/presentation/MODULE.md`, `ARCHITECTURE.md`,
+  `AGENTS.md`, this file.
+- **Verification:** `npm test` (29 tests / 6 files pass); `npm run build` passes;
+  `npm run lint` passes; `npm run docs:check` passes; `npm run format:check` passes.
+- **Notes for next session:** start Phase 3: autonomous NPCs (Tier 0). Define 6 starter
+  snails matching the Art Bible in `src/domain/data/snails.json` and validate with a zod
+  schema (`src/domain/schemas/snail-schema.ts`).

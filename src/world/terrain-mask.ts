@@ -1,11 +1,19 @@
 /**
- * Phase 1 terrain: a seeded 1D heightfield rasterised into the byte mask.
- * Carving and chunk dirty tracking arrive in Phase 2; queries are already the
- * same ones collision and rendering will use.
+ * Destructible terrain mask: seeded 1D heightfield, byte mask, chunk grid and carving.
+ * Delegates collision queries to collision.ts and carving to terrain-carver.ts.
  */
 
-import { PLAYER_START_X, WORLD_HEIGHT, WORLD_WIDTH, clamp, createRng } from '../core/index';
-import type { TerrainMaskData, TerrainQuery } from './terrain';
+import {
+  PLAYER_START_X,
+  TERRAIN_CHUNK_SIZE,
+  WORLD_HEIGHT,
+  WORLD_WIDTH,
+  clamp,
+  createRng,
+} from '../core/index';
+import { isBodyFree, groundHeightBelow, isSolid, surfaceNormal } from './collision';
+import type { Rect, TerrainCarver, TerrainChunk, TerrainMaskData } from './terrain';
+import { carveCircle } from './terrain-carver';
 
 export interface TerrainGenerationOptions {
   width?: number;
@@ -51,9 +59,40 @@ function smoothNoise(values: Float32Array, period: number, x: number): number {
   return left + (right - left) * smooth;
 }
 
-export class TerrainMask implements TerrainQuery {
+function createInitialChunks(width: number, height: number): TerrainChunk[] {
+  const columns = Math.ceil(width / TERRAIN_CHUNK_SIZE);
+  const rows = Math.ceil(height / TERRAIN_CHUNK_SIZE);
+  const chunks: TerrainChunk[] = [];
+
+  for (let row = 0; row < rows; row += 1) {
+    for (let column = 0; column < columns; column += 1) {
+      const x = column * TERRAIN_CHUNK_SIZE;
+      const y = row * TERRAIN_CHUNK_SIZE;
+      const rect: Rect = {
+        x,
+        y,
+        width: Math.min(TERRAIN_CHUNK_SIZE, width - x),
+        height: Math.min(TERRAIN_CHUNK_SIZE, height - y),
+      };
+      chunks.push({
+        index: row * columns + column,
+        column,
+        row,
+        rect,
+        textureKey: `terrain-chunk-${column}-${row}`,
+        dirty: false,
+        dirtyRect: null,
+      });
+    }
+  }
+  return chunks;
+}
+
+export class TerrainMask implements TerrainCarver {
   readonly data: TerrainMaskData;
   readonly surfaceY: Int16Array;
+  readonly chunks: readonly TerrainChunk[];
+  private readonly mutableChunks: TerrainChunk[];
 
   constructor(seed: string, options: TerrainGenerationOptions = {}) {
     const width = options.width ?? WORLD_WIDTH;
@@ -96,55 +135,44 @@ export class TerrainMask implements TerrainQuery {
     }
 
     this.data = { width, height, pixels };
+    this.mutableChunks = createInitialChunks(width, height);
+    this.chunks = this.mutableChunks;
   }
 
   isSolid(x: number, y: number): boolean {
-    const { width, height, pixels } = this.data;
-    if (x < 0 || x >= width) return false;
-    if (y < 0) return false;
-    if (y >= height) return true;
-    return pixels[Math.floor(y) * width + Math.floor(x)] !== 0;
+    return isSolid(this.data, x, y);
   }
 
   groundHeightBelow(x: number, startY: number): number | null {
-    const { width, height, pixels } = this.data;
-    const column = Math.floor(x);
-    if (column < 0 || column >= width) return null;
-
-    let y = Math.max(0, Math.floor(startY));
-    const surface = this.surfaceY[column] ?? height;
-    if (y < surface) y = surface;
-
-    for (; y < height; y += 1) {
-      if (pixels[y * width + column] !== 0) return y;
-    }
-    return null;
+    return groundHeightBelow(this.data, this.surfaceY, x, startY);
   }
 
   surfaceNormal(x: number, y: number): { x: number; y: number } {
-    const left = this.groundHeightBelow(x - 6, y - 12);
-    const right = this.groundHeightBelow(x + 6, y - 12);
-    if (left === null || right === null) return { x: 0, y: -1 };
-
-    const slope = (right - left) / 12;
-    const length = Math.hypot(slope, 1);
-    return { x: -slope / length, y: 1 / length };
+    return surfaceNormal(this, x, y);
   }
 
   isBodyFree(x: number, footY: number, width: number, height: number): boolean {
-    const half = width / 2;
-    const top = footY - height;
-    const sampleXs = [x - half, x, x + half];
+    return isBodyFree(this, x, footY, width, height);
+  }
 
-    for (const sampleX of sampleXs) {
-      if (this.isSolid(sampleX, footY - 1)) return false;
-      if (this.isSolid(sampleX, top)) return false;
+  carveCircle(x: number, y: number, radius: number): Rect | null {
+    return carveCircle(this.data, this.surfaceY, this.mutableChunks, x, y, radius);
+  }
+
+  takeDirtyChunks(): readonly TerrainChunk[] {
+    return this.mutableChunks.filter((chunk) => chunk.dirty);
+  }
+
+  takeDirtyRects(): readonly Rect[] {
+    const rects: Rect[] = [];
+    for (const chunk of this.mutableChunks) {
+      if (chunk.dirty && chunk.dirtyRect) {
+        rects.push(chunk.dirtyRect);
+      }
+      chunk.dirty = false;
+      chunk.dirtyRect = null;
     }
-    for (const sampleY of [top + height * 0.33, top + height * 0.66]) {
-      if (this.isSolid(x - half, sampleY)) return false;
-      if (this.isSolid(x + half, sampleY)) return false;
-    }
-    return true;
+    return rects;
   }
 }
 
