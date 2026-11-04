@@ -1,0 +1,12 @@
+{
+  "game.title": "Svet slimákov",
+  "game.subtitle": "Malý živý svet, ktorý sa hýbe aj bez teba.",
+  "hud.controls": "Šípky alebo A / D — pohyb",
+  "hud.chatPlaceholder": "Napíš slimákovi…",
+  "hud.pause": "Pauza",
+  "hud.settings": "Nastavenia",
+  "status.generating": "Slimák rozmýšľa…",
+  "status.offline": "Slimáky si šepkajú z pamäti.",
+  "status.phase0": "Fáza 0: dokumentácia a kostra projektu.",
+  "error.llmFallback": "Rozhovor pokračuje po pamäti."
+}

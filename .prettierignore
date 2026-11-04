@@ -1,0 +1,6 @@
+dist
+coverage
+node_modules
+assets/generated
+package-lock.json
+docs/MASTER_PROMPT.md

@@ -1,0 +1,47 @@
+{
+  "name": "ai-snail-world",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "A tiny, cozy 2D side-view world inhabited by AI-driven snails.",
+  "packageManager": "npm@11.19.1",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "npm run typecheck && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint . && npm run lint:deps",
+    "lint:deps": "depcruise src server --config .dependency-cruiser.cjs",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "docs:check": "tsx scripts/docs-check.ts",
+    "server:dev": "tsx watch server/index.ts",
+    "server:start": "tsx server/index.ts"
+  },
+  "dependencies": {
+    "@hono/node-server": "2.1.6",
+    "dotenv": "18.0.9",
+    "hono": "4.13.16",
+    "phaser": "3.90.0",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@types/node": "24.19.2",
+    "dependency-cruiser": "18.7.2",
+    "eslint": "10.14.0",
+    "eslint-config-prettier": "10.1.8",
+    "globals": "17.14.0",
+    "prettier": "3.9.10",
+    "tsx": "4.23.15",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.72.1",
+    "vite": "8.3.5",
+    "vitest": "5.1.0"
+  }
+}

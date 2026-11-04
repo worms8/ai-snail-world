@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ai-snail-world.local/schemas/asset-manifest.json",
+  "title": "AI Snail World asset manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "assets"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "version": { "const": 1 },
+    "assets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "type",
+          "path",
+          "frameWidth",
+          "frameHeight",
+          "frames",
+          "anchor",
+          "layer",
+          "status",
+          "prompt"
+        ],
+        "properties": {
+          "id": { "type": "string", "pattern": "^[a-z0-9]+(?:[._-][a-z0-9]+)*$" },
+          "type": { "enum": ["spritesheet", "image", "tileset", "audio", "font"] },
+          "path": { "type": "string", "minLength": 1 },
+          "frameWidth": { "type": "integer", "minimum": 1 },
+          "frameHeight": { "type": "integer", "minimum": 1 },
+          "frames": { "type": "integer", "minimum": 1 },
+          "anchor": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["x", "y"],
+            "properties": {
+              "x": { "type": "number", "minimum": 0, "maximum": 1 },
+              "y": { "type": "number", "minimum": 0, "maximum": 1 }
+            }
+          },
+          "layer": {
+            "enum": [
+              "body",
+              "shell",
+              "face",
+              "accessory",
+              "bubble",
+              "terrain",
+              "background",
+              "ui",
+              "audio"
+            ]
+          },
+          "variants": { "type": "array", "items": { "type": "string" }, "default": [] },
+          "status": { "enum": ["placeholder", "final"] },
+          "prompt": { "type": "string", "minLength": 20 }
+        }
+      }
+    }
+  }
+}
